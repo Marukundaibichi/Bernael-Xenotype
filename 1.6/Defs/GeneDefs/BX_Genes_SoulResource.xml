@@ -43,5 +43,7 @@
 				<backgroundPathArchite>UI/Icons/Genes/BX_ArchogenesDark</backgroundPathArchite>
 			</li>
 		</modExtensions>
+		<mentalBreakMtbDays>0.1</mentalBreakMtbDays>
+		<mentalBreakDef>BX_SoulFeedingFrenzy</mentalBreakDef>
 	</GeneDef>
 </Defs>

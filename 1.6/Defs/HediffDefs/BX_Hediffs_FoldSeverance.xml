@@ -4,7 +4,7 @@
   <HediffDef>
     <defName>BX_FoldShift</defName>
     <label>fold shift</label>
-    <description>.</description>
+    <description>TODO.</description>
     <hediffClass>HediffWithComps</hediffClass>
     <isBad>false</isBad>
     <tendable>false</tendable>

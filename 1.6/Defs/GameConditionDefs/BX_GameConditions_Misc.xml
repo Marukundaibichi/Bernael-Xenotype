@@ -6,7 +6,7 @@
     <defName>BX_GazeCaligo</defName>
     <conditionClass>Bernael_Xenotype.GameCondition_GazeCaligo</conditionClass>
     <label>caligo's gaze</label>
-    <description>.</description>
+    <description>TODO.</description>
     <endMessage>Caligo's Gaze is ending.</endMessage>
     <letterText>You have achieved a monumental milestone. In that very instant, the heavens tremble, and dusk paints the land in deep bluish-black tones. This is no ordinary eclipse - a distant nebula has ignited, and Caligo has cast her gaze upon this region.
 	
@@ -21,7 +21,7 @@ The psychic ether hums with her proximity. Those open to psychic energy experien
     <defName>BX_BogeymanInitial</defName>
     <conditionClass>Bernael_Xenotype.GameCondition_BogeymanInitial</conditionClass>
     <label>initial bogeyman conditions</label>
-    <description>.</description>
+    <description>The initial signs of Bogeyman event.</description>
     <displayOnUI>false</displayOnUI>
     <allowUnderground>false</allowUnderground>
   </GameConditionDef>

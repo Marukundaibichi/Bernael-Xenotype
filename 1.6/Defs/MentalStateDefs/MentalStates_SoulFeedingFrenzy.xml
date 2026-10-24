@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  <MentalBreakDef>
+    <defName>BX_SoulFeedingFrenzy</defName>
+    <label>soul feeding frenzy</label>
+    <intensity>Extreme</intensity>
+    <workerClass>Bernael_Xenotype.MentalBreakWorker_SoulFeedingFrenzy</workerClass>
+    <mentalState>BX_SoulFeedingFrenzy</mentalState>
+  </MentalBreakDef>
+
+  <MentalStateDef ParentName="BaseMentalState">
+    <defName>BX_SoulFeedingFrenzy</defName>
+    <label>soul feeding frenzy</label>
+    <stateClass>Bernael_Xenotype.MentalState_SoulFeedingFrenzy</stateClass>
+    <category>Misc</category>
+    <beginLetterLabel>soul feeding frenzy</beginLetterLabel>
+    <beginLetter>{0} has entered a soul feeding frenzy!</beginLetter>
+    <recoveryMessage>{0}'s soul feeding frenzy has ended.</recoveryMessage>
+    <baseInspectLine>Mental state: Soul feeding frenzy</baseInspectLine>
+    <blockNormalThoughts>true</blockNormalThoughts>
+    <minTicksBeforeRecovery>5000</minTicksBeforeRecovery>
+    <maxTicksBeforeRecovery>10000</maxTicksBeforeRecovery>
+  </MentalStateDef>
+</Defs>

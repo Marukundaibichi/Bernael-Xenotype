@@ -4,7 +4,7 @@
   <AbilityDef>
     <defName>BX_WingBurst</defName>
     <label>wing burst</label>
-    <description>.</description>
+    <description>TODO.</description>
     <iconPath>UI/Icons/Abilities/BX_WingBurst</iconPath>
 		<category>Bernael</category>
     <cooldownTicksRange>600</cooldownTicksRange>

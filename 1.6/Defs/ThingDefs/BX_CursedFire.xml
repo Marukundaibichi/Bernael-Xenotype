@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  <ThingDef>
+    <defName>BX_CursedFire</defName>
+    <label>cursed flame</label>
+    <thingClass>Bernael_Xenotype.CursedFire</thingClass>
+    <category>Attachment</category>
+    <tickerType>Normal</tickerType>
+    <pathfinderDangerous>true</pathfinderDangerous>
+    <forceDebugSpawnable>true</forceDebugSpawnable>
+    <graphicData>
+      <texPath>Things/CursedFlame</texPath>
+      <graphicClass>Graphic_Flicker</graphicClass>
+      <shaderType>TransparentPostLight</shaderType>
+    </graphicData>
+    <altitudeLayer>PawnState</altitudeLayer>
+    <useHitPoints>false</useHitPoints>
+    <comps>
+      <li Class="CompProperties_Glower">
+        <glowRadius>4</glowRadius>
+        <glowColor>(100, 200, 255, 0)</glowColor>
+      </li>
+    </comps>
+  </ThingDef>
+</Defs>

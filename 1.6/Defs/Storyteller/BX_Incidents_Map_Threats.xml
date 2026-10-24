@@ -27,7 +27,7 @@
     <workerClass>Bernael_Xenotype.IncidentWorker_Bogeyman</workerClass>
     <letterLabel>The bogeyman</letterLabel>
     <letterDef>ThreatBig</letterDef>
-    <letterText>.</letterText>
+    <letterText>TODO.</letterText>
     <baseChance>0</baseChance> <!-- Fired manually, never automatic -->
     <minRefireDays>60</minRefireDays>
     <canOccurOnAllPlanetLayers>true</canOccurOnAllPlanetLayers>

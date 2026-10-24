@@ -9,6 +9,8 @@
     <BX_NeverConsumeSoul>Never consume bottled souls.</BX_NeverConsumeSoul>
     <BX_ConsumeSoulBelow>Consume bottled souls below</BX_ConsumeSoulBelow>
 
+    <BX_MentalBreak.label>{PAWN} has changed into a Bernael</BX_MentalBreak.label>
+    <BX_MentalBreak.text>{PAWN} has successfully fed on a soul during the frenzy, breaking the shackles of their former self and transforming into a Bernael.</BX_MentalBreak.text>
 
     <MB_AlertLowSoulEnergy>Low soul saturation</MB_AlertLowSoulEnergy>
     <MB_AlertLowSoulEnergyDesc>These soul eaters are running out of soul saturation. Give them a bottled soul essence or let them drain someone</MB_AlertLowSoulEnergyDesc>
@@ -27,4 +29,7 @@
 
     <BX_SoulEnergy>soul saturation</BX_SoulEnergy>
     <BX_SoulEnergy_Desc>How much soul saturation this restores when consumed.</BX_SoulEnergy_Desc>
+
+    <BX_CursedFireOn>TODO.</BX_CursedFireOn>
+    <BX_CursedBurning>TODO.</BX_CursedBurning>
 </LanguageData>

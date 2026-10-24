@@ -31,7 +31,7 @@
     </targetTags>
     <workerClass>Bernael_Xenotype.IncidentWorker_AstralAwakening</workerClass>
     <letterLabel>Astral awakening</letterLabel>
-    <letterText>{PAWNS}.</letterText>
+    <letterText>{PAWNS} TODO.</letterText>
     <letterDef>PositiveEvent</letterDef>
     <baseChance>0</baseChance>
     <minRefireDays>60</minRefireDays>
@@ -46,7 +46,7 @@
     </targetTags>
     <workerClass>Bernael_Xenotype.IncidentWorker_EthersBlessing</workerClass>
     <letterLabel>Ethers blessing</letterLabel>
-    <letterText>.</letterText>
+    <letterText>TODO.</letterText>
     <letterDef>PositiveEvent</letterDef>
     <baseChance>0</baseChance>
     <minRefireDays>60</minRefireDays>
@@ -77,7 +77,7 @@
     </targetTags>
     <workerClass>Bernael_Xenotype.IncidentWorker_PsychicOvercharge</workerClass>
     <letterLabel>Psychic overcharge</letterLabel>
-    <letterText>.</letterText>
+    <letterText>TODO.</letterText>
     <letterDef>PositiveEvent</letterDef>
     <baseChance>0</baseChance>
     <minRefireDays>60</minRefireDays>
@@ -92,7 +92,7 @@
     </targetTags>
     <workerClass>Bernael_Xenotype.IncidentWorker_PsychicBurnout</workerClass>
     <letterLabel>Psychic burnout</letterLabel>
-    <letterText>.</letterText>
+    <letterText>TODO.</letterText>
     <letterDef>NegativeEvent</letterDef>
     <baseChance>0</baseChance>
     <minRefireDays>60</minRefireDays>
@@ -107,7 +107,7 @@
     </targetTags>
     <workerClass>Bernael_Xenotype.IncidentWorker_PsychicRupture</workerClass>
     <letterLabel>Psychic rupture</letterLabel>
-    <letterText>.</letterText>
+    <letterText>TODO.</letterText>
     <letterDef>NegativeEvent</letterDef>
     <baseChance>0</baseChance>
     <minRefireDays>60</minRefireDays>

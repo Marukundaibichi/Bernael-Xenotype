@@ -4,7 +4,7 @@
   <HediffDef>
     <defName>BX_GazeCaligoBuff</defName>
     <label>gaze caligo buff</label>
-    <description>.</description>
+    <description>TODO.</description>
     <scenarioCanAdd>false</scenarioCanAdd>
     <defaultLabelColor>(0.51, 0.71, 0.86)</defaultLabelColor>
     <stages>
@@ -23,7 +23,7 @@
   <HediffDef>
     <defName>BX_GazeCaligoDebuff</defName>
     <label>gaze caligo debuff</label>
-    <description>.</description>
+    <description>TODO.</description>
     <isBad>true</isBad>
     <scenarioCanAdd>false</scenarioCanAdd>
     <defaultLabelColor>(0.51, 0.71, 0.86)</defaultLabelColor>
@@ -43,7 +43,7 @@
   <HediffDef>
     <defName>BX_PsychicOverchargeHediff</defName>
     <label>psychic overcharge</label>
-    <description>.</description>
+    <description>TODO.</description>
     <scenarioCanAdd>false</scenarioCanAdd>
     <defaultLabelColor>(0.51, 0.71, 0.86)</defaultLabelColor>
     <stages>

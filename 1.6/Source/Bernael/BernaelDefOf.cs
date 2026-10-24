@@ -21,6 +21,7 @@ namespace Bernael_Xenotype
         public static GeneDef BX_AbyssalReach;
         public static GeneDef BX_DepravedHead;
         public static GeneDef BX_BernaelBlind;
+        public static GeneDef BX_Warlockracy;
         public static TaleDef BX_ConsumedGrace;
         public static XenotypeDef BX_Bernael;
         public static HediffDef BX_Blindness;

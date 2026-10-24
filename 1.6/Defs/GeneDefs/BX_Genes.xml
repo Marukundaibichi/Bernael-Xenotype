@@ -186,6 +186,23 @@
 		</modExtensions>
 	</GeneDef>
 	
+	<GeneDef>
+		<defName>BX_Warlockracy</defName>
+		<label>warlockracy</label>
+		<labelShortAdj>withered</labelShortAdj>
+		<description>Carriers of this gene strictly measure a creature's worth by their psionic prowess. They feel strong contempt toward non-psionic beings, but hold high reverence for powerful psioticians.</description>
+		<biostatCpx>1</biostatCpx>
+		<biostatMet>-1</biostatMet>
+		<displayOrderInCategory>439</displayOrderInCategory>
+		<iconPath>UI/Icons/Genes/BX_Warlockracy</iconPath>
+		<symbolPack>
+			<prefixSymbols>
+				<li><symbol>psi</symbol></li>
+				<li><symbol>mage</symbol></li>
+			</prefixSymbols>
+		</symbolPack>
+	</GeneDef>
+	
 <!-- Moved withered soul hediff to the hediff file -->
 	
 	<GeneDef>
@@ -264,6 +281,8 @@
 				<backgroundPathArchite>UI/Icons/Genes/BX_XenogenesSoul</backgroundPathArchite>
 			</li>
 		</modExtensions>
+		<mentalBreakMtbDays>0.1</mentalBreakMtbDays>
+		<mentalBreakDef>BX_SoulFeedingFrenzy</mentalBreakDef>
 	</GeneDef>
 	
 	<GeneDef>

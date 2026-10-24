@@ -4,7 +4,7 @@
   <AbilityDef>
     <defName>BX_FoldShift</defName>
     <label>fold shift</label>
-    <description>.</description>
+    <description>TODO.</description>
     <iconPath>UI/Icons/Abilities/BX_FoldShift</iconPath>
 		<category>Bernael</category>
     <cooldownTicksRange>3000</cooldownTicksRange>

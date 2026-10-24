@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>/Defs/ThinkTreeDef[defName="MentalStateNonCritical"]/thinkRoot/subNodes</xpath>
+        <value>
+            <li Class="ThinkNode_ConditionalMentalState">
+                <state>BX_SoulFeedingFrenzy</state>
+                <subNodes>
+                    <li Class="ThinkNode_Priority">
+                        <subNodes>
+                            <li Class="Bernael_Xenotype.JobGiver_SoulFeedingFrenzy" />
+                            <li Class="JobGiver_WanderAnywhere">
+                                <maxDanger>Deadly</maxDanger>
+                                <locomotionUrgency>Jog</locomotionUrgency>
+                                <ticksBetweenWandersRange>60~120</ticksBetweenWandersRange>
+                            </li>
+                        </subNodes>
+                    </li>
+                </subNodes>
+                </li>
+        </value>
+    </Operation>
+
+</Patch>

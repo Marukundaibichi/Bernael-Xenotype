@@ -38,6 +38,14 @@ namespace Bernael_Xenotype
             return Valid(target);
         }
 
+        public override void PostApplied(List<LocalTargetInfo> targets, Map map)
+        {
+            if (parent?.pawn != null && parent.pawn.InMentalState && parent.pawn.MentalState is MentalState_SoulFeedingFrenzy frenzyState)
+            {
+                frenzyState.Notify_AbilityCastFinished();
+            }
+        }
+
         public override bool Valid(LocalTargetInfo target, bool throwMessages = false)
         {
             Pawn pawn = target.Pawn;
