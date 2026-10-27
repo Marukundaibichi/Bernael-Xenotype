@@ -1,3 +1,6 @@
+# Local developer tools, caches and machine-specific environment notes.
+/.rimsearcher/
+
 # IDE and build output
 [Bb]in/
 [Oo]bj/
@@ -68,9 +71,12 @@ Tests/tools
 # Local QA harnesses, reports and implementation notes. Keep official Tests/*.rwtest.
 [Qq][Aa]/
 [Qq][Aa].meta
-/1.6/Source/**/*.md
-/1.6/Source/Directory.Build.targets
-/1.6/Assemblies/*QA.dll
+/1.[67]/Source/**/*.md
+!/1.6/Source/DarkMirage/README.md
+/1.[67]/Source/Directory.Build.targets
+/1.[67]/Assemblies/*QA.dll
+/1.[67]/Assemblies/*.deps.json
+/1.[67]/Assemblies/*.runtimeconfig.json
 
 # Original audio masters; the game uses the WAV assets under Common/Sounds.
 /*.mp3

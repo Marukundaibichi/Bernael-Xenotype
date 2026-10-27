@@ -9,7 +9,7 @@ namespace Bernael_Xenotype
         static Main_HarmonyInitializer()
         {
             Harmony harmony = new Harmony("BernaelXenotype.Harmony.SentinelPatches");
-            harmony.PatchAll();
+            harmony.PatchAll(typeof(Main_HarmonyInitializer).Assembly);
         }
     }
 }

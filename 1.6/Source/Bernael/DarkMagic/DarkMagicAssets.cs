@@ -20,6 +20,10 @@ namespace Bernael_Xenotype
             if (attemptedLoad) return false;
             attemptedLoad = true;
             Shader seal = null, orb = null;
+#if RIMWORLD_1_7
+            seal = DefDatabase<ShaderDef>.GetNamed("BX_MaliciousSeal").Shader;
+            orb = DefDatabase<ShaderDef>.GetNamed("BX_DireOrb").Shader;
+#else
             ModContentPack mod = LoadedModManager.RunningModsListForReading.FirstOrDefault(pack =>
                 pack.assemblies.loadedAssemblies.Contains(typeof(DarkMagicAssets).Assembly));
             if (mod != null)
@@ -28,9 +32,10 @@ namespace Bernael_Xenotype
                     if (seal == null) seal = bundle.LoadAsset<Shader>("Assets/Shaders/MaliciousSeal.shader");
                     if (orb == null) orb = bundle.LoadAsset<Shader>("Assets/Shaders/DireOrb.shader");
                 }
+#endif
             if (seal == null || !seal.isSupported || orb == null || !orb.isSupported)
             {
-                Log.Error("[Bernael] Malicious Seal / Dire Orb shaders unavailable. Install 1.6/AssetBundles/darkmagic_win and restart RimWorld.");
+                Log.Error("[Bernael] Malicious Seal / Dire Orb shaders unavailable. Check the mod's version-specific shader assets and restart RimWorld.");
                 return false;
             }
             Seal = new Material(seal) { name = "Bernael Malicious Seal (shared)" };

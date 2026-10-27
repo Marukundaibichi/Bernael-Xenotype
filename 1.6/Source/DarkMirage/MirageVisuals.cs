@@ -26,16 +26,20 @@ namespace Bernael_Xenotype
         public static bool ShaderReady(ThingDef def)
         {
             if (shader != null) return shader.isSupported;
+#if RIMWORLD_1_7
+            shader = DefDatabase<ShaderDef>.GetNamed("BX_DarkMirage").Shader;
+#else
             foreach (AssetBundle bundle in def.modContentPack.assetBundles.loadedAssetBundles)
             {
                 shader = bundle.LoadAsset<Shader>("Assets/Shaders/DarkMirage.shader");
                 if (shader != null) break;
             }
+#endif
             if (shader != null && shader.isSupported) return true;
             if (!warned)
             {
                 warned = true;
-                Log.Error("[Dark Mirage] Missing/unsupported shader. Check 1.6/AssetBundles/darkmirage_win and restart RimWorld.");
+                Log.Error("[Dark Mirage] Missing/unsupported shader. Check the mod's version-specific shader assets and restart RimWorld.");
             }
             return false;
         }

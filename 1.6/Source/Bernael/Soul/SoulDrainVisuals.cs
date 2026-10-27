@@ -234,6 +234,11 @@ namespace Bernael_Xenotype
             if (attemptedLoad) return false;
             attemptedLoad = true;
             Shader shader = null;
+#if RIMWORLD_1_7
+            shader = DefDatabase<ShaderDef>.GetNamed("BX_SoulDrain").Shader;
+            AshenShader = DefDatabase<ShaderDef>.GetNamed("BX_SoulDrainAshen").Shader;
+            SmokeTexture = ContentFinder<Texture2D>.Get("Effects/BX_SoulDrainSmoke_Uncompressed");
+#else
             AbilityDef def = DefDatabase<AbilityDef>.GetNamed("BX_SoulFeeding");
             foreach (AssetBundle bundle in def.modContentPack.assetBundles.loadedAssetBundles)
             {
@@ -243,9 +248,10 @@ namespace Bernael_Xenotype
                 SmokeTexture = bundle.LoadAsset<Texture2D>("Assets/Textures/SoulDrainSmoke.png");
                 break;
             }
+#endif
             if (shader == null || !shader.isSupported || AshenShader == null || !AshenShader.isSupported || SmokeTexture == null)
             {
-                Log.Error("[Bernael] Soul Drain shader unavailable. Install 1.6/AssetBundles/souldrain_win and restart RimWorld.");
+                Log.Error("[Bernael] Soul Drain shader unavailable. Check the mod's version-specific shader assets and restart RimWorld.");
                 return false;
             }
             material = new Material(shader) { name = "Bernael Soul Drain (shared)" };
