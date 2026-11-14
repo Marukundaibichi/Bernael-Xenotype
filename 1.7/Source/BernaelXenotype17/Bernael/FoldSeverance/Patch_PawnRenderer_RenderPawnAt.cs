@@ -32,7 +32,7 @@ namespace Bernael_Xenotype
                             // worn extras are drawn separately by the game and must remain visible.
                             Rot4 facing = rotOverride ?? ___pawn.Rotation;
                             Vector3 equipmentPosition = drawLoc;
-                            equipmentPosition.y = AltitudeLayer.Pawn.AltitudeFor() + 0.05f +
+                            equipmentPosition.y = FoldShiftVisuals.ShadowAltitudeAt(drawLoc) +
                                 PawnRenderUtility.AltitudeForLayer(facing == Rot4.North ? -10f : 90f);
                             if (traversalOpacity > 0.95f)
                                 PawnRenderUtility.DrawEquipmentAndApparelExtras(___pawn, equipmentPosition, facing,

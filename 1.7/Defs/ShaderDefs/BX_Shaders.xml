@@ -34,7 +34,8 @@
       <blendMode>Custom</blendMode>
       <blendSrcFactor>One</blendSrcFactor>
       <blendDstFactor>OneMinusSrcAlpha</blendDstFactor>
-      <renderQueue>3021</renderQueue>
+      <!-- Cover the halo's TransparentPostLight pass (3150) during entry and exit, before the gate fog. -->
+      <renderQueue>3151</renderQueue>
     </shaderProgram>
   </ShaderDef>
   <ShaderDef>

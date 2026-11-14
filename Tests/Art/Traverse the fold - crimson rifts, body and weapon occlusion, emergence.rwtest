@@ -1,5 +1,5 @@
 rwtest 1
-test "Traverse the fold - dark blue rifts, body and weapon occlusion, emergence" project="Bernael" created=2026-11-09T00:00:00
+test "Traverse the fold - crimson rifts, body and weapon occlusion, emergence" project="Bernael" created=2026-11-09T00:00:00
 
 requires mod=Mortis.BX
 requires dlc=Biotech
@@ -17,7 +17,7 @@ tick 45
 gizmo "Traverse the fold" expect=allowed
 target cell=0,0 expect=allowed
 speed x1
-ask "fold-gate" ticks=320 claim="a dark blue slit tears along each wall face. Wisps draw into the entrance and stream out of the far side as crimson gathers where the shadow crosses. The shadow breaks into pieces at the entrance and reforms at the exit. Its body and sword are concealed inside the wall. Both slits pinch shut, the wall stays intact and the remaining shadow dissolves once outside"
+ask "fold-gate" ticks=320 claim="a dark crimson slit with a near-black core tears along each wall face. Red-black wisps draw into the entrance and stream out of the far side as brighter crimson gathers where the shadow crosses; no blue rim or mist remains. The shadow breaks into pieces at the entrance and reforms at the exit. Its body and sword are concealed inside the wall. Both slits pinch shut, the wall stays intact and the remaining shadow dissolves once outside"
 assert pawn "Traveler" at 1,0 expect=present
 assert thing Wall at 0,0 expect=present
 assert log clean

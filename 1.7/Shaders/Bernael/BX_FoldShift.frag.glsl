@@ -1,6 +1,5 @@
 #version 450
-// Fold Shift: the shifted pawn in the black/red palette of the Bernael halo (Mortis, 2026-11-09): the pawn itself
-// under an opaque black filter, a crimson outline around the whole silhouette and glowing eyes. Built on
+// Fold Shift: the pawn under an opaque black filter, a fine dark-crimson outline and glowing eyes. Built on
 // BX_DarkMirage's captured silhouette, distance field and eye anchors. _SpawnAge drives the full-body tint,
 // rising rim and eye light. _Fade drives the exit. Mode 1 is the crimson pulse at the start of the shift.
 layout(location = 0) in vec2 vUv;
@@ -22,11 +21,11 @@ layout(set = 2, binding = 0) uniform MaterialUniforms
 layout(set = 2, binding = 1) uniform sampler2D _MainTex;
 layout(set = 2, binding = 2) uniform sampler2D _DistanceTex;
 
-const vec3 Void = vec3(0.032,0.014,0.022);
-const vec3 Ember = vec3(0.30,0.035,0.06);
-const vec3 Crimson = vec3(0.86,0.11,0.17);
-const vec3 Glow = vec3(0.95,0.16,0.22);
-const vec3 EyeCore = vec3(1.0,0.78,0.76);
+const vec3 Void = vec3(0.018,0.014,0.018);
+const vec3 Ember = vec3(0.22,0.025,0.042);
+const vec3 Crimson = vec3(0.65,0.085,0.12);
+const vec3 Glow = vec3(0.74,0.10,0.14);
+const vec3 EyeCore = vec3(0.96,0.65,0.62);
 
 float silhouetteDistance(vec2 uv)
 {
@@ -46,7 +45,7 @@ vec2 eyeLight(vec2 uv, vec4 eye)
     vec2 d=(uv-eye.xy)*vec2(72,108)/max(eye.w,0.2);
     float r=dot(d,d);
     float core=1-bxSmoothstep(0.35,1.15,r);
-    float halo=exp2(-r*0.22)*0.75+exp2(-r*0.05)*0.28;
+    float halo=exp2(-r*0.30)*0.36+exp2(-r*0.09)*0.08;
     return vec2(core,halo)*eye.z;
 }
 
@@ -78,14 +77,13 @@ vec4 shadow(vec2 canvasUv)
     float bodyReveal=mix(tint,1.0,reveal);
     float eyeIgnition=bxSmoothstep(0.13,0.48,entry)*(1-bxSmoothstep(0.13,0.68,fade));
 
-    // A crimson outline hugs the whole silhouette, halo and wings included, with a soft glow outside it: the
-    // halo's own black core and red outline.
-    const float lineWidth=0.0105;
+    // Keep the rim fine enough to preserve the halo's gaps and sharp points.
+    const float lineWidth=0.0032;
     float line=coverage(distance-lineWidth);
     float glowDistance=max(distance-lineWidth,0.0);
-    float breath=0.88+0.12*sin(t*2.1);
-    float glow=(exp2(-pow(glowDistance/0.011,2)*1.6)*0.55+exp2(-pow(glowDistance/0.028,2)*1.4)*0.16)*breath;
-    glow*=1-bxSmoothstep(0.035,0.06,glowDistance);
+    float breath=0.94+0.06*sin(t*2.1);
+    float glow=(exp2(-pow(glowDistance/0.006,2)*1.6)*0.24+exp2(-pow(glowDistance/0.016,2)*1.4)*0.055)*breath;
+    glow*=1-bxSmoothstep(0.018,0.035,glowDistance);
     vec3 rim=mix(Glow*glow,Crimson,line)*reveal;
     float rimAlpha=mix(glow,1.0,line)*reveal;
 
@@ -94,10 +92,13 @@ vec4 shadow(vec2 canvasUv)
     float luma=dot(source.rgb,vec3(0.299,0.587,0.114));
     vec3 detail=mix(vec3(luma),source.rgb,0.25);
     vec3 body=Void+detail*0.18;
+    // Retain the halo's native crimson linework instead of replacing it with a swollen outer rim.
+    float crimsonInk=bxSmoothstep(0.10,0.42,source.r-max(source.g,source.b));
+    body=mix(body,source.rgb*vec3(0.50,0.55,0.55),crimsonInk*0.82);
     vec3 rgb=mix(rim,body*bodyReveal,a);
     float alpha=mix(rimAlpha,bodyReveal,a);
     float dissolveEdge=(1-bxSmoothstep(0.016,0.092,abs(revealField)))*reveal*line;
-    rgb+=Crimson*dissolveEdge*0.53;
+    rgb+=Crimson*dissolveEdge*0.36;
     vec2 eyes=(eyeLight(uv,uMaterial._EyeA)+eyeLight(uv,uMaterial._EyeB))*eyeIgnition*bodyReveal;
     float pulse=0.92+sin(t*2.4)*0.08;
     rgb+=(EyeCore*eyes.x+Glow*eyes.y)*pulse;

@@ -12,6 +12,12 @@ namespace Bernael_Xenotype
 
     public class HediffComp_NoPathCost : HediffComp
     {
+        public override void CompExposeData()
+        {
+            if (Scribe.mode == LoadSaveMode.PostLoadInit)
+                WorldComponent_NoPathCost.Add(Pawn);
+        }
+
         public override void CompPostPostAdd(DamageInfo? dinfo)
         {
             WorldComponent_NoPathCost.Add(Pawn);

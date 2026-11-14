@@ -20,7 +20,12 @@ namespace Bernael_Xenotype
         private FoldShiftVisuals visuals;
         private int startedTick = -1;
 
-        public override void CompExposeData() => Scribe_Values.Look(ref startedTick, "foldVisualStarted", -1);
+        public override void CompExposeData()
+        {
+            Scribe_Values.Look(ref startedTick, "foldVisualStarted", -1);
+            if (Scribe.mode == LoadSaveMode.PostLoadInit)
+                WorldComponent_FoldShiftVisual.Add(Pawn);
+        }
 
         public override void CompPostPostAdd(DamageInfo? dinfo)
         {

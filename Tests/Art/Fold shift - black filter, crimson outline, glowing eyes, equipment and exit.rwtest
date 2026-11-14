@@ -13,12 +13,13 @@ draft "Folder"
 select "Folder"
 gizmo "Fold shift" expect=allowed
 speed x1
-ask "fold-entry" ticks=80 claim="a soft crimson pulse rolls out beneath the caster. The face darkens with the body as the red outline rises, and front-facing eyes light during the transition. The pawn's body, wings, halo and clothing stay readable as the shadow reaches full opacity"
+ask "fold-entry" ticks=80 claim="a soft dark-crimson pulse rolls out beneath the caster. The face darkens with the body as a fine dark-red outline rises, and front-facing eyes light without washing the face in red. The pawn's body, wings, halo and clothing stay readable as the shadow reaches full opacity. The halo keeps its native crimson linework, sharp points and open gaps without a thick luminous border"
+ask "fold-halo-continuity" claim="the halo darkens smoothly with the transformation; it does not stay bright until suddenly changing colour when the ordinary pawn is hidden. Watch both entry and exit frame by frame at close zoom, including when facing north. The pawn and halo remain visible on the first capture frame"
 assert pawn "Folder" hediff=BX_FoldShift_Hediff expect=present
 ask "fold-equipment" claim="the equipped sword is still visible in the shifted state; the silhouette is not a generic replacement pawn"
 ask "fold-facing-distance" claim="movement directions update the shadow's facing and eyes (none when facing away), and its crimson outline remains recognizable at normal play zoom and when zoomed out"
 damage "Folder" amount=5 kind=EMP
-ask "fold-exit" ticks=40 claim="the shadow dissolves from the head down and the ordinary pawn gradually returns. No duplicate silhouette, lingering rim or horizontal strip appears beneath the pawn, including in the last frame of the dissolve"
+ask "fold-exit" ticks=40 claim="the shadow dissolves from the head down and the ordinary pawn gradually returns. The halo brightens with the dissolve rather than flashing bright as soon as the shift ends. No duplicate silhouette, lingering rim or horizontal strip appears beneath the pawn, including in the last frame of the dissolve"
 assert pawn "Folder" hediff=BX_FoldShift_Hediff expect=absent
 assert pawn "Folder" equipment=BX_LifeVanquisher expect=present
 assert log clean

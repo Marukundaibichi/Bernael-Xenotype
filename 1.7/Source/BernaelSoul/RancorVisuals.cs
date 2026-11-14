@@ -121,7 +121,8 @@ namespace Bernael_Xenotype
             if (direction.sqrMagnitude < 0.0001f) direction = Vector3.right;
             direction.Normalize();
             // Souls grow out of the release flash; full-size overlapping faces otherwise form a dense rosette.
-            float emergence = Mathf.SmoothStep(0.35f, 1f, Mathf.Clamp01(phase / 0.23f));
+            float emergeSeconds = Mathf.Lerp(0.15f, 0.28f, RancorVariation.Value(seed, 5));
+            float emergence = Mathf.SmoothStep(0.35f, 1f, Mathf.Clamp01(phase / emergeSeconds));
             float total = 0;
             Vector3 previous = at;
             for (int i = 0; i < trail.Count; i++)
@@ -165,7 +166,7 @@ namespace Bernael_Xenotype
             properties.SetFloat("_FaceVariant", (seed & 0x7fffffff) % 5);
             properties.SetFloat("_Opacity", 1);
             // A soul a little larger or smaller than its neighbours.
-            float size = emergence * (0.9f + seed % 7 * 0.035f);
+            float size = emergence * Mathf.Lerp(0.78f, 1.18f, RancorVariation.Value(seed, 6));
             Draw(at - direction * (FaceOffset * size), Along(direction),
                 new Vector3(SoulLength * size, 1, SoulWidth * size), soulMaterials[(seed & 0x7fffffff) % soulMaterials.Length]);
             return true;

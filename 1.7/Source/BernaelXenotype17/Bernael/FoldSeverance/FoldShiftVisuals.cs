@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using HarmonyLib;
 using RimWorld;
 using Verse;
 using UnityEngine;
@@ -12,6 +14,10 @@ namespace Bernael_Xenotype
     public sealed class FoldShiftVisuals : IDisposable
     {
         [ThreadStatic] public static bool Capturing;
+        private static readonly AccessTools.FieldRef<PawnRenderTree, PawnDrawParms> CachedDrawParms =
+            AccessTools.FieldRefAccess<PawnRenderTree, PawnDrawParms>("oldParms");
+        private static readonly AccessTools.FieldRef<PawnRenderTree, List<PawnGraphicDrawRequest>> CachedDrawRequests =
+            AccessTools.FieldRefAccess<PawnRenderTree, List<PawnGraphicDrawRequest>>("drawRequests");
         private static Shader nativeShader;
         public static Shader Shader
         {
@@ -26,6 +32,9 @@ namespace Bernael_Xenotype
         public const float WorldSize = 3f;
         // Seconds for the shadow to rise over the pawn; until then the pawn itself still shows above it.
         public const float EntrySeconds = 0.58f;
+        // The halo's height offset and render layer reach 0.304 above the pawn when facing north.
+        // Cover it during entry and exit too, so hiding or restoring the ordinary pawn cannot change its colour.
+        public static float ShadowAltitudeAt(Vector3 position) => position.y + 0.33f;
 
         private sealed class Facing
         {
@@ -92,7 +101,7 @@ namespace Bernael_Xenotype
         private void DrawShadow(Facing entry, Pawn pawn, Vector3 position, float phase, float age, float fade, float opacity)
         {
             Vector3 at = position;
-            at.y = AltitudeLayer.Pawn.AltitudeFor() + 0.05f;
+            at.y = ShadowAltitudeAt(position);
             at.x += (entry.canvas.x + entry.canvas.z * 0.5f - 0.5f) * WorldSize;
             at.z += (entry.canvas.y + entry.canvas.w * 0.5f - 0.5f) * WorldSize;
             properties.Clear();
@@ -185,6 +194,9 @@ namespace Bernael_Xenotype
         {
             bool wasCapturing = Capturing;
             pawn.Drawer.renderer.EnsureGraphicsInitialized();
+            PawnRenderTree renderTree = pawn.Drawer.renderer.renderTree;
+            PawnDrawParms previousDrawParms = CachedDrawParms(renderTree);
+            PawnGraphicDrawRequest[] previousDrawRequests = CachedDrawRequests(renderTree).ToArray();
             Camera camera = Find.PawnCacheCamera;
             RenderTexture previousActive = RenderTexture.active;
             RenderTexture previousTarget = camera.targetTexture;
@@ -220,6 +232,12 @@ namespace Bernael_Xenotype
             }
             finally
             {
+                // RenderCache overwrites the live tree's draw requests with capture-space matrices.
+                // Restore the exact prepared world draws before the ordinary pawn resumes this frame.
+                CachedDrawParms(renderTree) = previousDrawParms;
+                List<PawnGraphicDrawRequest> requests = CachedDrawRequests(renderTree);
+                requests.Clear();
+                requests.AddRange(previousDrawRequests);
                 Capturing = wasCapturing;
                 RenderTexture.active = previousActive;
                 camera.targetTexture = previousTarget;

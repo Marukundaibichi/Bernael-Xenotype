@@ -26,28 +26,35 @@ namespace Bernael_Xenotype
         {
             rancorSoul = true;
             rancorOutward = true;
+            rancorContinuous = true;
+            rancorSpeedFactor = Mathf.Lerp(0.82f, 1.22f, RancorVariation.Value(thingIDNumber, 1));
+            rancorTurnRadius = Mathf.Lerp(1.1f, 1.8f, RancorVariation.Value(thingIDNumber, 2));
             rancorLaunchTick = Find.TickManager.TicksGame;
             Vector3 direction = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), 0, Mathf.Sin(angle * Mathf.Deg2Rad));
             Vector3 start = ExactPosition;
             rancorAim = destination;
-            float reach = 2.7f + (thingIDNumber * 17 % 11) * 0.07f;
+            float reach = Mathf.Lerp(1.9f, 4.1f, RancorVariation.Value(thingIDNumber, 3));
             Vector3 end = start + direction * reach;
-            // Keep the whole release on the map even when the caster stands on its edge.
-            end.x = Mathf.Clamp(end.x, 0.05f, Map.Size.x - 0.05f);
-            end.z = Mathf.Clamp(end.z, 0.05f, Map.Size.z - 0.05f);
+            // A turn back along a map edge can sweep a full diameter before facing the target.
+            float margin = rancorTurnRadius * 2f + RancorSpeed;
+            end.x = Mathf.Clamp(end.x, margin, Map.Size.x - margin);
+            end.z = Mathf.Clamp(end.z, margin, Map.Size.z - margin);
+            if ((end - start).MagnitudeHorizontal() < RancorSpeed * 2f)
+            {
+                Vector3 toward = (rancorAim - start).Yto0();
+                end = start + toward.normalized * Mathf.Min(reach, toward.magnitude * 0.5f);
+            }
             visualTrackingEnabled = true;
             PrepareTrackingSegment(start, end);
-            segmentTicksTotal = ticksToImpact = OutwardTicks;
+            rancorHeading = (end - start).Yto0().normalized;
             previousVisualPosition = start;
         }
 
-        // The released souls fly unguided for a while before they turn on their targets (Mortis, 2026-11-09: the
-        // homing began too abruptly). They burst out at about the soul bolt's speed and slow as they spread, then a
-        // turn picks them up from that slow drift and hands them over to the homing flight at its full speed.
-        private const int OutwardTicks = 24;
+        // Legacy curve parameters are retained for projectiles already in flight in older saves.
         private const int TurnTicks = 20;
-        // Launch speed as a multiple of the outward leg's average; it ends at 2 - OutwardLaunch of it.
         private const float OutwardLaunch = 1.5f;
+        private const float SoulTurnRadius = 1.45f;
+        private float RancorSpeed => def.projectile.SpeedTilesPerTick * rancorSpeedFactor;
 
         public override Vector3 ExactPosition
         {
@@ -59,9 +66,9 @@ namespace Bernael_Xenotype
                 }
 
                 float distanceCoveredFraction = Mathf.Clamp01(1f - (float)ticksToImpact / segmentTicksTotal);
-                if (rancorOutward)
+                if (rancorOutward && !rancorContinuous)
                     distanceCoveredFraction *= OutwardLaunch + (1f - OutwardLaunch) * distanceCoveredFraction;
-                if (rancorTurning)
+                if (rancorTurning && !rancorContinuous)
                 {
                     float t = distanceCoveredFraction, u = 1 - t;
                     return (segmentOrigin * (u*u*u) + turnControlA * (3*u*u*t) + turnControlB * (3*u*t*t) +
@@ -90,6 +97,7 @@ namespace Bernael_Xenotype
         {
             get
             {
+                if (rancorContinuous) return rancorHeading;
                 Vector3 remainingTravel = (destination - ExactPosition).Yto0();
                 float remainingDistance = remainingTravel.magnitude;
                 if (remainingDistance <= 0.0001f)
@@ -190,6 +198,10 @@ namespace Bernael_Xenotype
             Scribe_Values.Look(ref rancorSoul, "rancorSoul", false);
             Scribe_Values.Look(ref rancorOutward, "rancorOutward", false);
             Scribe_Values.Look(ref rancorTurning, "rancorTurning", false);
+            Scribe_Values.Look(ref rancorContinuous, "rancorContinuous", false);
+            Scribe_Values.Look(ref rancorHeading, "rancorHeading");
+            Scribe_Values.Look(ref rancorSpeedFactor, "rancorSpeedFactor", 1f);
+            Scribe_Values.Look(ref rancorTurnRadius, "rancorTurnRadius", SoulTurnRadius);
             Scribe_Values.Look(ref turnControlA, "soulTurnA");
             Scribe_Values.Look(ref turnControlB, "soulTurnB");
             Scribe_Values.Look(ref rancorLaunchTick, "rancorLaunchTick");
@@ -237,6 +249,12 @@ namespace Bernael_Xenotype
                     previousVisualPosition = point;
                 }
             }
+            if (rancorContinuous && !rancorOutward)
+            {
+                // UpdateRateTicks keeps the native collision sweep to one tick per steering step.
+                for (int i = 0; i < delta && !Destroyed; i++) AdvanceRancor();
+                return;
+            }
             if (rancorOutward || rancorTurning)
             {
                 AdvanceProjectile(delta, ExactPosition);
@@ -281,13 +299,68 @@ namespace Bernael_Xenotype
             AdvanceProjectile(delta, currentPosition);
         }
 
+        private void AdvanceRancor()
+        {
+            Vector3 at = ExactPosition;
+            Pawn target = intendedTarget.Pawn;
+            if (canRetarget && TargetNeedsReplacement(target))
+            {
+                if (TryRetarget(target, at)) target = intendedTarget.Pawn;
+                else CommitRancorAim();
+            }
+            if (intendedTarget.HasThing)
+            {
+                if (target != null && !target.Dead && target.Spawned && target.Map == Map && WithinTrackingRange(target))
+                    rancorAim = target.DrawPos + missOffset;
+                else CommitRancorAim();
+            }
+
+            Vector3 toward = (rancorAim - at).Yto0();
+            float distance = toward.magnitude;
+            float speed = RancorSpeed;
+            if (distance <= speed)
+            {
+                // Only the final step uses the real destination; Bullet still resolves the hit and damage.
+                PrepareTrackingSegment(at, rancorAim);
+                segmentTicksTotal = ticksToImpact = 1;
+            }
+            else
+            {
+                float heading = Mathf.Atan2(rancorHeading.z, rancorHeading.x) * Mathf.Rad2Deg;
+                float desired = Mathf.Atan2(toward.z, toward.x) * Mathf.Rad2Deg;
+                // Tighten the turn near the target so even a close or moving enemy cannot trap a soul in an orbit.
+                float radius = Mathf.Min(rancorTurnRadius, distance * 0.45f);
+                float turn = Mathf.Clamp(Mathf.DeltaAngle(heading, desired),
+                    -speed / radius * Mathf.Rad2Deg, speed / radius * Mathf.Rad2Deg);
+                heading = (heading + turn) * Mathf.Deg2Rad;
+                rancorHeading = new Vector3(Mathf.Cos(heading), 0f, Mathf.Sin(heading));
+                PrepareRancorStep(at);
+            }
+            AdvanceProjectile(1, at);
+        }
+
+        private void PrepareRancorStep(Vector3 at)
+        {
+            // The second tick is a look-ahead, replaced on the next update. It never resolves a waypoint as a hit.
+            segmentOrigin = at;
+            destination = at + rancorHeading * (RancorSpeed * 2f);
+            segmentTicksTotal = ticksToImpact = 2;
+        }
+
+        private void CommitRancorAim()
+        {
+            usedTarget = intendedTarget = new LocalTargetInfo(rancorAim.ToIntVec3());
+            canRetarget = false;
+            targetCoverDef = null;
+        }
+
         protected override void DrawAt(Vector3 drawLoc, bool flip = false)
         {
             if (rancorSoul)
             {
                 Vector3 at = drawLoc + (rancorOutward || rancorTurning ? Vector3.zero : VisualArcOffset);
                 Vector3 direction = rancorOutward ? destination - segmentOrigin : VisualTravelDirection;
-                if (rancorTurning)
+                if (rancorTurning && !rancorContinuous)
                 {
                     float t = Mathf.Clamp01(1f - (float)ticksToImpact / segmentTicksTotal), u = 1 - t;
                     direction = (turnControlA - segmentOrigin) * (3*u*u) + (turnControlB - turnControlA) * (6*u*t) +
@@ -309,6 +382,18 @@ namespace Bernael_Xenotype
 
         protected override void ImpactSomething()
         {
+            if (rancorContinuous)
+            {
+                if (rancorOutward)
+                {
+                    Vector3 at = ExactPosition;
+                    rancorOutward = false;
+                    rancorTurning = true;
+                    PrepareRancorStep(at);
+                }
+                else base.ImpactSomething();
+                return;
+            }
             if (rancorOutward || rancorTurning)
             {
                 // Reaching the radial waypoint is not a hit. Keep the target and normal Bullet damage.
@@ -354,7 +439,7 @@ namespace Bernael_Xenotype
             amplitude = 0f;
 
             HomingSoulProjectileExtension extension = Extension;
-            if (!visualTrackingEnabled || extension == null || extension.visualArcAmplitude <= 0f ||
+            if (rancorContinuous || !visualTrackingEnabled || extension == null || extension.visualArcAmplitude <= 0f ||
                 remainingDistance <= 0.0001f || totalDistance <= 0.0001f)
             {
                 return false;
@@ -508,7 +593,8 @@ namespace Bernael_Xenotype
             segmentOrigin = start;
             destination = end;
             float distance = (destination - segmentOrigin).MagnitudeHorizontal();
-            segmentTicksTotal = Mathf.Max(1, Mathf.CeilToInt(distance / def.projectile.SpeedTilesPerTick));
+            float speed = rancorContinuous ? RancorSpeed : def.projectile.SpeedTilesPerTick;
+            segmentTicksTotal = Mathf.Max(1, Mathf.CeilToInt(distance / speed));
             ticksToImpact = segmentTicksTotal;
         }
 
@@ -528,6 +614,10 @@ namespace Bernael_Xenotype
         private bool rancorSoul;
         private bool rancorOutward;
         private bool rancorTurning;
+        private bool rancorContinuous;
+        private Vector3 rancorHeading;
+        private float rancorSpeedFactor = 1f;
+        private float rancorTurnRadius = SoulTurnRadius;
         private Vector3 turnControlA, turnControlB;
         private int rancorLaunchTick;
         private Vector3 rancorAim;

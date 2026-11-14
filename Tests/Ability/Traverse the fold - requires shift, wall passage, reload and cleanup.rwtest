@@ -20,7 +20,7 @@ target cell=0,0 expect=allowed
 speed x1
 waitfor pawn "Traveler" at 0,0 ticks=400 expect=present
 speed paused
-reload note="save while occupying the wall; phasing permissions and destination must restore"
+reload note="save while occupying the wall; phasing permissions, movement-cost exemption and destination must restore"
 speed x1
 waitfor pawn "Traveler" at 1,0 ticks=400 expect=present
 tick 25 note="allow both rifts and the shift's exit image to finish"

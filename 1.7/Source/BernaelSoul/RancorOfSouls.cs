@@ -336,18 +336,23 @@ namespace Bernael_Xenotype
 
                 if (volley.radialBurst)
                 {
-                    // All souls leave in the same tick. The initial directions cover a full circle,
-                    // regardless of where the enemies stand; each soul then bends toward its target.
+                    // Keep the circular release, but choose targets near each soul's outward path so opposite
+                    // sides of the volley do not exchange targets across the caster.
                     tmpTargets.Clear();
                     GatherTargets(volley.caster, volley.searchRadius, tmpTargets);
                     int count = volley.shotsRemaining;
+                    int[] assigned = new int[tmpTargets.Count];
+                    int seed = unchecked(volley.caster.thingIDNumber * 397 ^ volley.nextLaunchTick);
+                    float spacing = 360f / count;
+                    float scatter = Mathf.Min(12f, spacing * 0.38f);
                     for (int shot = 0; shot < count; shot++)
                     {
-                        LocalTargetInfo target = tmpTargets.Count > 0
-                            ? new LocalTargetInfo(tmpTargets[shot % tmpTargets.Count])
-                            : new LocalTargetInfo(volley.fallbackTargetCell);
+                        // Jitter within each sector: keep coverage all around the caster without a regular ring.
+                        float angle = volley.burstAngle + spacing * shot +
+                            (RancorVariation.Value(unchecked(seed + shot), 4) * 2f - 1f) * scatter;
+                        LocalTargetInfo target = BurstTarget(volley, angle, assigned);
                         CompAbilityEffect_RancorOfSouls.LaunchProjectile(volley.caster, volley.projectileDef,
-                            target, volley.burstCenter, volley.burstAngle + 360f * shot / count);
+                            target, volley.burstCenter, angle);
                     }
                     volley.shotsRemaining = 0;
                     continue;
@@ -469,6 +474,48 @@ namespace Bernael_Xenotype
 
         private List<RancorVolley> volleys = new List<RancorVolley>();
         private readonly List<Pawn> tmpTargets = new List<Pawn>();
+
+        private LocalTargetInfo BurstTarget(RancorVolley volley, float angle, int[] assigned)
+        {
+            Vector3 outward = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), 0f, Mathf.Sin(angle * Mathf.Deg2Rad));
+            Vector3 release = volley.burstCenter + outward * 3f;
+            int best = -1;
+            float bestScore = float.MaxValue;
+            for (int i = 0; i < tmpTargets.Count; i++)
+            {
+                float score = BurstTargetScore(tmpTargets[i], release, outward);
+                if (score < bestScore)
+                {
+                    bestScore = score;
+                    best = i;
+                }
+            }
+            if (best < 0) return new LocalTargetInfo(volley.fallbackTargetCell);
+
+            // Share the volley among clustered enemies without pulling souls away from their release sector.
+            Vector3 sector = (tmpTargets[best].DrawPos - volley.burstCenter).Yto0().normalized;
+            bestScore += assigned[best] * 0.8f;
+            for (int i = 0; i < tmpTargets.Count; i++)
+            {
+                Vector3 direction = (tmpTargets[i].DrawPos - volley.burstCenter).Yto0().normalized;
+                if (Vector3.Dot(sector, direction) < 0.866f) continue;
+                float score = BurstTargetScore(tmpTargets[i], release, outward) + assigned[i] * 0.8f;
+                if (score < bestScore)
+                {
+                    bestScore = score;
+                    best = i;
+                }
+            }
+            assigned[best]++;
+            return new LocalTargetInfo(tmpTargets[best]);
+        }
+
+        private static float BurstTargetScore(Pawn target, Vector3 release, Vector3 outward)
+        {
+            Vector3 toward = (target.DrawPos - release).Yto0();
+            // Approximate path length, including the cost of turning back against the release.
+            return toward.magnitude + 6f * (1f - Vector3.Dot(outward, toward.normalized));
+        }
     }
 
     public class RancorVolley : IExposable
@@ -501,5 +548,21 @@ namespace Bernael_Xenotype
         public Vector3 burstCenter;
         public int burstCount;
         public float burstAngle;
+    }
+
+    internal static class RancorVariation
+    {
+        // Independent, stable channels keep neighbouring souls distinct without consuming combat randomness.
+        public static float Value(int seed, uint channel)
+        {
+            unchecked
+            {
+                uint value = (uint)seed + channel * 0x9e3779b9u;
+                value = (value ^ (value >> 16)) * 0x7feb352du;
+                value = (value ^ (value >> 15)) * 0x846ca68bu;
+                value ^= value >> 16;
+                return (value & 0x00ffffffu) / 16777215f;
+            }
+        }
     }
 }
