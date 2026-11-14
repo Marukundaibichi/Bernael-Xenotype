@@ -30,8 +30,15 @@
 !/1.7/Source/BernaelXenotype17/
 !/1.7/Source/BernaelXenotype.slnx
 
+# Keep only gameplay scenarios in the test tree
+/Tests/**/*
+!/Tests/**/
+!/Tests/**/*.rwtest
+
 # Editor settings, build output and caches
-**/.*/
+**/.*
+!/.gitattributes
+!/.gitignore
 !/.github/
 [Bb]in/
 [Oo]bj/
@@ -100,11 +107,6 @@ project.assets.json
 !/1.7/Assemblies/BernaelVanquish.dll
 !/1.7/Assemblies/BernaelXenotype.dll
 !/Common/Textures/Effects/Piloto/SOURCES.json
-
-# Keep only gameplay scenarios in the test tree
-/Tests/**/*
-!/Tests/**/
-!/Tests/**/*.rwtest
 
 # Operating-system files
 Thumbs.db
